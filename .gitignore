@@ -1,0 +1,18 @@
+# dependencies
+/node_modules
+
+# semantic ui based theme (less)
+src/assets/semantic/*
+
+
+# production
+/build
+
+# misc
+.env
+.env.local
+.eslintrc
+package-lock.json
+*.js.map
+.vscode
+.eslintcache
