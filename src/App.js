@@ -1,53 +1,83 @@
 import logo from './logo.svg';
 import './App.css';
 import './assets/semantic/semantic.min.css'
-import { Header, Button, Divider } from 'semantic-ui-react'
-// import { Container, Header } from 'semantic-ui-react'
 
-function App() {
+import { BrowserRouter,Switch,Link, Route } from 'react-router-dom';
+import { GuardProvider, GuardedRoute } from 'react-router-guards';
+
+import { authProtectedRoutes, publicRoutes } from './routes';
+
+import routeGuard  from './routes/route-guard';
+
+
+
+// handle auth and authorization layout 
+const AppRoute = ({
+  component: Component,
+  layout: Layout,
+  isAuthProtected,
+  ...rest
+}) => {
+  // console.log("Approute", Component);
+  return (
+    <GuardedRoute
+      {...rest}
+      render={(props) => {
+        if (isAuthProtected) {   //define layout with sidebar and other side layout or anything new layour which final by designer
+          return (
+            // <Redirect
+            //   to={{ pathname: "/signin", state: { from: props.location } }}
+            // />
+            <div>
+            <Component {...props} />
+          </div>
+          );
+        }
+        // authorised so return component
+        return (
+          <div>
+            <Component {...props} />
+          </div>
+        );
+      }}
+    />
+  );
+};
+
+
+const App = () => {
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <Header as='h1'>Welcome To React App With Semtic UI</Header>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-        <Divider hidden />
-        <div>
-          <Button content='Primary' primary />
-          <Button content='Secondary' secondary />
-        </div>
-      </header>
+      {/* <h1>hello world</h1> */}
+      <BrowserRouter>
+        <GuardProvider guards={[routeGuard]} >
+          <Switch>
+
+            {/* public route render */}
+            {publicRoutes.map((route, idx) => (
+              <AppRoute
+                path={route.path}
+                component={route.component}
+                key={idx}
+                isAuthProtected={false}
+                {...route}
+              />
+            ))}
+              {/* authorised route render */}
+            {/* {authProtectedRoutes.map((route, idx) => (
+              <AppRoute
+                path={route.path}
+                component={route.component}
+                key={idx}
+                isAuthProtected={true}
+                {...route}
+              />
+            ))} */}
+          </Switch>
+        </GuardProvider>
+      </BrowserRouter>
+
     </div>
-  //   <div>
-  //   <Container fluid>
-  //     <Header as='h2'>Dogs Roles with Humans</Header>
-  //     <p>
-  //       Domestic dogs inherited complex behaviors, such as bite inhibition, from
-  //       their wolf ancestors, which would have been pack hunters with complex
-  //       body language. These sophisticated forms of social cognition and
-  //       communication may account for their trainability, playfulness, and
-  //       ability to fit into human households and social situations, and these
-  //       attributes have given dogs a relationship with humans that has enabled
-  //       them to become one of the most successful species on the planet today.
-  //     </p>
-  //     <p>
-  //       The dogs' value to early human hunter-gatherers led to them quickly
-  //       becoming ubiquitous across world cultures. Dogs perform many roles for
-  //       people, such as hunting, herding, pulling loads, protection, assisting
-  //       police and military, companionship, and, more recently, aiding
-  //       handicapped individuals. This impact on human society has given them the
-  //       nickname "man's best friend" in the Western world. In some cultures,
-  //       however, dogs are also a source of meat.
-  //     </p>
-  //   </Container>
-  // </div>
   );
 }
 
