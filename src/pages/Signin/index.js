@@ -8,10 +8,6 @@ const Signin = (props) => {
     }
     return (
         <Fragment>
-            {/* <h1>Signin page</h1>
-            <button onClick={() => {
-                toggleTab()   
-              }}>To signup</button> */}
             <Grid textAlign='center' style={{ height: '100vh' }} verticalAlign='middle'>
                 <Grid.Column style={{ maxWidth: 450 }}>
                     <Header as='h2' color='teal' textAlign='center'>
@@ -29,12 +25,14 @@ const Signin = (props) => {
                             />
 
                             <Button color='teal' fluid size='large'>
-                                Login
+                                Sign In
                             </Button>
                         </Segment>
                     </Form>
                     <Message>
-                        New to us? <a href='#'>Sign Up</a>
+                        New to us? <a onClick={
+                            toggleTab
+                        }>Sign Up</a>
                     </Message>
                 </Grid.Column>
             </Grid>
