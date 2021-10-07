@@ -9,6 +9,8 @@ import { history } from './util/history';
 import { GuardProvider, GuardedRoute } from 'react-router-guards';
 
 import { authProtectedRoutes, publicRoutes } from './routes';
+import NonAuthLayout from './layout/NonAuthLayout';
+import AuthLayout from './layout/AuthLayout';
 
 import routeGuard from './routes/route-guard';
 
@@ -17,6 +19,7 @@ import routeGuard from './routes/route-guard';
 // handle auth and authorization layout 
 const AppRoute = ({
   component: Component,
+  layout: Layout,
   isAuthProtected,
   ...rest
 }) => {
@@ -27,19 +30,23 @@ const AppRoute = ({
       render={(props) => {
         if (isAuthProtected) {   //define layout with sidebar and other side layout or anything new layour which final by designer
           return (
-            // <Redirect
-            //   to={{ pathname: "/signin", state: { from: props.location } }}
-            // />
-            <div>
+
+            // <div>
+            //   <Component {...props} />
+            // </div>
+            <Layout>
               <Component {...props} />
-            </div>
+            </Layout>
           );
         }
         // authorised so return component
         return (
-          <div>
-            <Component {...props} />
-          </div>
+          // <div>
+          //   <Component {...props} />
+          // </div>
+          <Layout>
+              <Component {...props} />
+            </Layout>
         );
       }}
     />
@@ -63,6 +70,7 @@ const App = () => {
                 {publicRoutes.map((route, idx) => (
                   <AppRoute
                     path={route.path}
+                    layout={NonAuthLayout}
                     component={route.component}
                     key={idx}
                     isAuthProtected={false}
@@ -73,6 +81,7 @@ const App = () => {
                 {authProtectedRoutes.map((route, idx) => (
                   <AppRoute
                     path={route.path}
+                    layout={AuthLayout}
                     component={route.component}
                     key={idx}
                     isAuthProtected={true}

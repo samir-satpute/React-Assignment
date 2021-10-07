@@ -7,9 +7,8 @@ const Signin = React.lazy(()=> import('../pages/Signin'));
 const Signup = React.lazy(() => import('../pages/Signup'));
 const Dashboard = React.lazy(() => import('../pages/Dashboard'));
 const MyOrder = React.lazy(() => import('../pages/MyOrder'));
-// import Signin from '../pages/Signin';
-//import Signup from '../pages/Signup';
-//import Dashboard from '../pages/Dashboard';
+const Users = React.lazy(() => import('../pages/Users'));
+const BookList = React.lazy(() => import('../pages/BookList'));
 
  const publicRoutes = [
   {
@@ -43,6 +42,18 @@ const authProtectedRoutes = [
     path: '/my-orders',
     exact: true,
     component: MyOrder,
+    meta: { auth: true },
+  },
+  {
+    path: '/users',
+    exact: true,
+    component: Users,
+    meta: { auth: true },
+  },
+  {
+    path: '/book-list',
+    exact: true,
+    component: BookList,
     meta: { auth: true },
   },
 ];
