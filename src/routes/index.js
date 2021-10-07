@@ -1,10 +1,15 @@
 
 import React from 'react'
-import { Redirect } from 'react-router-dom'
+import { Redirect } from 'react-router-dom';
 
-import Signin from '../pages/Signin';
-import Signup
- from '../pages/Signup';
+
+const Signin = React.lazy(()=> import('../pages/Signin'));
+const Signup = React.lazy(() => import('../pages/Signup'));
+const Dashboard = React.lazy(() => import('../pages/Dashboard'));
+const MyOrder = React.lazy(() => import('../pages/MyOrder'));
+// import Signin from '../pages/Signin';
+//import Signup from '../pages/Signup';
+//import Dashboard from '../pages/Dashboard';
 
  const publicRoutes = [
   {
@@ -25,8 +30,22 @@ import Signup
         component: Signup,
         meta: { auth: false },
       },
+
  ];
-const authProtectedRoutes = [];
+const authProtectedRoutes = [
+  {
+    path: '/dashboard',
+    exact: true,
+    component: Dashboard,
+    meta: { auth: true },
+  },
+  {
+    path: '/my-orders',
+    exact: true,
+    component: MyOrder,
+    meta: { auth: true },
+  },
+];
 
 
 
