@@ -23,11 +23,11 @@ export const authLogin = (credentials) => {
                     secureStorage.setItem("userData", docSnap.data());
                     dispatch({ type: "LOGIN_SUCCESS", auth });
                     if(docSnap.data().userType === 'customer'){
-                        history.push('/my-orders');
+                        history.push('/dashboard');
                     }else if(docSnap.data().userType === 'seller'){
-                        history.push('/dashboard');
+                        history.push('/book-list');
                     }else if(docSnap.data().userType === 'admin'){
-                        history.push('/dashboard');
+                        history.push('/users');
                     }else{
                         //redirect to user not found or 404 error page
                     }
@@ -62,13 +62,13 @@ export const registration = (credentials) => {
                     // console.log("Successfully create user in collection ---->", res)
                     secureStorage.setItem("userData", data);
                     dispatch({ type: "REGISTRATION_SUCCESS", res });
-                    history.push('/dashboard');
+                    // history.push('/dashboard');
                     if(data.userType === 'customer'){
-                        history.push('/my-orders');
+                        history.push('/dashboard');
                     }else if(data.userType === 'seller'){
-                        history.push('/dashboard');
+                        history.push('/book-list');
                     }else if(data.userType === 'admin'){
-                        history.push('/dashboard');
+                        history.push('/users');
                     }else{
                         //redirect to user not found or 404 error page
                     }

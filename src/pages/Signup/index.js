@@ -66,6 +66,7 @@ const Signup = (props) => {
             // console.log("sign up details form ----->", signupData)
             e.preventDefault();
             props.registration(signupData);
+ 
         }
     }
 

@@ -2,16 +2,19 @@
 
 
 const adminRoute = [
-    "/dashboard",
+    // "/dashboard",
     "/users",
-    '/book-list'
+    '/book-list',
+    '/my-orders'
 ];
 
 const sellerRoute = [
-    "/dashboard",
-    '/book-list'
+    // "/dashboard",
+    '/book-list',
+    '/my-orders'
 ];
 const customerRoute = [
+    '/dashboard',
     '/my-orders'
 ];
 const publicRoutes = [

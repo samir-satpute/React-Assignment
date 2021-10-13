@@ -15,12 +15,12 @@ const routeGuard = async (to, from, next) => {
     if (userData.userType === 'admin' && adminRoute.includes(to.location.pathname)) {
       next();
     }
-    next.redirect('/signin');
+    next.redirect('/');
   } else {
     if (publicRoutes.includes(to.location.pathname)) {
       next();
     } else {
-      next.redirect('/signin');
+      next.redirect('/');
     }
   }
 };

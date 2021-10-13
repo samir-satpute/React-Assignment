@@ -7,8 +7,6 @@ import { history } from "../util/history";
 
 const LeftsideMenuBar = (props) => {
 
-    //console.log("in LeftsideMenuBar")
-
     const [userType, setUserType] = useState("")
 
     useEffect(() => {
@@ -23,7 +21,7 @@ const LeftsideMenuBar = (props) => {
     const signOut = () => {
         //write logic for signout;
         secureStorage.clear();
-        history.push('/signin');
+        history.push('/');
     }
 
     return (
@@ -38,27 +36,33 @@ const LeftsideMenuBar = (props) => {
                 animation='push'
                 width='thin'
             >
-                <Menu.Item as='a' onClick={() => toggleRoute('/dashboard')}>
+                {userType === 'customer' && (
+                    <Menu.Item as='a' onClick={() => toggleRoute('/dashboard')}>
                     <Icon name='home' />
                     Home
                 </Menu.Item>
-                <Menu.Item as='a' onClick={() => toggleRoute('/users')}>
-                    <Icon name='user' />
+                )}
+                {userType === 'admin' && (
+                    <Menu.Item as='b' onClick={() => toggleRoute('/users')}>
+                        <Icon name='user' />
 
-                    User List
-                </Menu.Item>
-                <Menu.Item as='a' onClick={() => toggleRoute('/book-list')} >
-                    <Icon name='th' />
-                    Book List
-                </Menu.Item>
-                {userType === 'customer' && (
-                    <Menu.Item as='a'>
-                        <Icon name='th list' onClick={() => toggleRoute('/my-orders')} />
-                        My Orders
+                        User List
                     </Menu.Item>
                 )}
 
-                <Menu.Item as='a' onClick={() => signOut()}>
+                {(userType === 'admin' || userType === 'seller') && (
+                    <Menu.Item as='c' onClick={() => toggleRoute('/book-list')} >
+                        <Icon name='th' />
+                        Book List
+                    </Menu.Item>
+                )}
+
+                    <Menu.Item as='d'>
+                        <Icon name='th list' onClick={() => toggleRoute('/my-orders')} />
+                        My Orders
+                    </Menu.Item>
+
+                <Menu.Item as='e' onClick={() => signOut()}>
                     <Icon name='sign-out' />
                     Logout
                 </Menu.Item>

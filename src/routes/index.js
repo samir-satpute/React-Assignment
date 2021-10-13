@@ -2,7 +2,7 @@
 import React from 'react'
 import { Redirect } from 'react-router-dom';
 
-
+const Home = React.lazy(() => import('../pages/Home'));
 const Signin = React.lazy(()=> import('../pages/Signin'));
 const Signup = React.lazy(() => import('../pages/Signup'));
 const Dashboard = React.lazy(() => import('../pages/Dashboard'));
@@ -11,10 +11,16 @@ const Users = React.lazy(() => import('../pages/Users'));
 const BookList = React.lazy(() => import('../pages/BookList'));
 
  const publicRoutes = [
+  // {
+  //   path: '/',
+  //   exact: true,
+  //   component: () => <Redirect to="/signin" />,
+  //   meta: { auth: false },
+  // },
   {
     path: '/',
     exact: true,
-    component: () => <Redirect to="/signin" />,
+    component: Home,
     meta: { auth: false },
   },
     {

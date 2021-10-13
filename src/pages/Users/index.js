@@ -5,7 +5,7 @@ import { getFirestore } from "firebase/firestore";
 
 const Users = (props) => {
 
-    const [userList, setuserList] = useState();
+    const [userList, setuserList] = useState([]);
 
     useEffect(() => {
 
@@ -41,9 +41,9 @@ const Users = (props) => {
                 </Table.Header>
 
                 <Table.Body>
-                    {userList.map((user) => {
+                    {userList.map((user, index) => {
                         return (
-                            <Table.Row>
+                            <Table.Row key={index}>
                                 <Table.Cell>{user.first_name}</Table.Cell>
                                 <Table.Cell>{user.last_name}</Table.Cell>
                                 <Table.Cell>{user.email}</Table.Cell>
