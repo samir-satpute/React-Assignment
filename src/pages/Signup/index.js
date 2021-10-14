@@ -2,7 +2,7 @@ import React, { Fragment, useState } from "react";
 import { Button, Form, Grid, Header, Image, Message, Segment, Radio } from 'semantic-ui-react';
 import { connect } from 'react-redux';
 import { registration } from "../../store/action/authAction";
-
+import { history } from "../../util/history";
 
 const Signup = (props) => {
 
@@ -17,7 +17,7 @@ const Signup = (props) => {
 
 
     const toggleTab = () => {
-        props.history.push('/signin')
+        history.push('/signin')
     }
 
     const handleChange = (e) => {

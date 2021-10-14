@@ -2,6 +2,8 @@ import React, { Fragment, useState } from "react";
 import { Button, Form, Grid, Header, Image, Message, Segment, Label } from 'semantic-ui-react';
 import { connect } from 'react-redux';
 import { authLogin } from "../../store/action/authAction";
+import FormElement from "../../hoc/FormElement";
+import { history } from "../../util/history";
 
 
 const Signin = (props) => {
@@ -12,7 +14,7 @@ const Signin = (props) => {
     });
     const [errorList, setErrorList] = useState({});
     const toggleTab = () => {
-        props.history.push('/signup')
+        history.push('/signup')
     }
     const handleChange = (e) => {
         setSigninData({
@@ -60,17 +62,23 @@ const Signin = (props) => {
                     </Header>
                     <Form size='large'>
                         <Segment stacked>
-                            {/* {props.smartElement.input("email",{type:"password"})} */}
-                            <Form.Input
-                                fluid icon='user'
+                            {/* <Form.Input
+                                fluid 
+                                icon='user'
                                 type='email'
                                 name="email"
                                 onChange={handleChange}
                                 iconPosition='left'
                                 placeholder='E-mail address'
-                            />
+                            /> */}
+
+                            {props.fromElement({
+                                icon: 'user', type: 'email', name: 'email',
+                                iconPosition: 'left', placeholder: 'Email address',
+                                onChange: handleChange
+                            })}
                             {errorList.email && (<p style={{ color: "red", float: 'right' }}>Invalid email</p>)}
-                            <Form.Input
+                            {/* <Form.Input
                                 fluid
                                 icon='lock'
                                 iconPosition='left'
@@ -78,7 +86,13 @@ const Signin = (props) => {
                                 type='password'
                                 name="password"
                                 onChange={handleChange}
-                            />
+                            /> */}
+                            {props.fromElement({
+                                icon: 'lock', type: 'password', name: 'password',
+                                iconPosition: 'left', placeholder: 'Password',
+                                onChange: handleChange
+                            })}
+
                             {errorList.password && (<p style={{ color: "red", float: 'right' }}>Minimum 8 char, at least 1 letter and 1 number</p>)}
                             <Button color='teal' fluid size='large' onClick={
                                 handleSign
@@ -95,23 +109,21 @@ const Signin = (props) => {
                 </Grid.Column>
             </Grid>
         </Fragment>
-
     )
 }
 
 
 const mapDispatchToProps = dispatch => {
-    // console.log("in map dispatch to props --->", dispatch)
     return {
         authLogin: (credentials) => dispatch(authLogin(credentials))
     }
 }
 
 const mapStateToProps = state => {
-    // console.log("in map state to props ---->", state)
     return {
         auth: state.auth
     }
 }
-export default connect(mapStateToProps, mapDispatchToProps)(Signin);
+export default FormElement(connect(mapStateToProps, mapDispatchToProps)(Signin))
+// export default connect(mapStateToProps, mapDispatchToProps)(Signin);
 //export default Signin;
