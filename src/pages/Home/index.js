@@ -1,11 +1,10 @@
-import React, { Fragment, useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
-
-
 import { getBookList } from "../../store/action/bookAction";
 import { Button, Grid, Image } from 'semantic-ui-react';
 import secureStorage from '../../util/secureStorage';
 import { history } from '../../util/history';
+
 
 import Book from '../Book';
 
@@ -19,7 +18,7 @@ const Home = props => {
 
     useEffect(() => {
         const data = secureStorage.getItem("userData");
-        if(data != null){
+        if (data != null) {
             setUserdata(data);
         }
         getBookList();
@@ -38,32 +37,16 @@ const Home = props => {
         props.history.push(route)
     }
 
-    // const onSignOut = () => {
-    //     secureStorage.clear();
-    //     history.push('/signin');
-    // }
     return (
-        <Fragment>
-            {/* {userData == {} && ( */}
-                <Fragment>
-                    <h1>In home component</h1>
-                    <Button secondary onClick={() => onChangeRoute('/signin')}>Sign In</Button>
-                    <Button secondary onClick={() => onChangeRoute('/signup')}>Sign up</Button>
-
-                </Fragment>
-            
-
-            {/* {userData != {} && (
-                <Fragment>
-                    <h1>In home component</h1>
-                    <Button secondary onClick={() => onSignOut()}>Sign Out</Button>
-                </Fragment>
-            )} */}
-
+        <>
+            <>
+                <h1>In home component</h1>
+                <Button secondary onClick={() => onChangeRoute('/signin')}>Sign In</Button>
+                <Button secondary onClick={() => onChangeRoute('/signup')}>Sign up</Button>
+            </>
 
             <Grid columns={3} divided>
                 <Grid.Row>
-
                     {bookList.map((book, index) => {
                         return (
                             <Book key={index} book={book} />
@@ -72,10 +55,8 @@ const Home = props => {
                     }
                 </Grid.Row>
             </Grid>
-
-        </Fragment>
+        </>
     )
-
 }
 
 
@@ -91,6 +72,3 @@ const mapStateToProps = state => {
     }
 }
 export default connect(mapStateToProps, mapDispatchToProps)(Home);
-
-
-//export default Home;

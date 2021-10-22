@@ -1,13 +1,10 @@
 import { collection, getDocs, getFirestore, doc, addDoc, updateDoc } from "firebase/firestore";
 
 
-
 export const getOrderList = () => {
 
     const db = getFirestore();
-
     return async (dispatch) => {
-
         try {
             const querySnapshot = await getDocs(collection(db, "orders"));
             let list = [];
@@ -27,18 +24,15 @@ export const getOrderList = () => {
 }
 
 
-
 export const placeOrder = (orderDetails) => {
 
     const db = getFirestore();
-
     return async (dispatch) => {
 
         try {
             const orderRef = await addDoc(collection(db, "orders"), orderDetails);
             dispatch({ type: "ORDER_PLACE_SUCCESS", isOrderPlace: true })
             return Promise.resolve();
-
         } catch (error) {
             dispatch({ type: "ORDER_PLACE_ERROR", error })
             return Promise.reject(null);
@@ -50,13 +44,10 @@ export const placeOrder = (orderDetails) => {
 export const confirmOrder = (orderDetails) => {
 
     const db = getFirestore();
-
     return async (dispatch) => {
 
         try {
-
             const bookRef = doc(db, "orders", orderDetails.orderId);
-
             await updateDoc(bookRef, {
                 bookName: orderDetails.bookName,
                 discount: orderDetails.discount,
@@ -67,10 +58,8 @@ export const confirmOrder = (orderDetails) => {
                 totalPrice: orderDetails.totalPrice,
                 userName: orderDetails.userName
             });
-            // console.log("update successfully----->");
             dispatch({ type: "ORDER_CONFIRM_SUCCESS", isOrderConfirm: true })
             return Promise.resolve();
-
         } catch (error) {
             dispatch({ type: "ORDER_CONFIRM_ERROR", error })
             return Promise.reject(null);

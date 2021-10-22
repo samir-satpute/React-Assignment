@@ -9,7 +9,6 @@ import secureStorage from "../../util/secureStorage";
 
 export const authLogin = (credentials) => {
 
-    //console.log("in authAction authlogin ---->", credentials)
     const auth = getAuth();
     const db = getFirestore();
     return (dispatch) => {
@@ -18,21 +17,18 @@ export const authLogin = (credentials) => {
                 const user = loginUserCredential.user;
                 const docSnap = await getDoc(doc(db, 'users', user.uid))
                 if (docSnap.exists()) {
-                    // console.log("Document data:", docSnap.data());
-                    // console.log("Successfully login user ---->", user);
                     secureStorage.setItem("userData", docSnap.data());
                     dispatch({ type: "LOGIN_SUCCESS", auth });
-                    if(docSnap.data().userType === 'customer'){
+                    if (docSnap.data().userType === 'customer') {
                         history.push('/dashboard');
-                    }else if(docSnap.data().userType === 'seller'){
+                    } else if (docSnap.data().userType === 'seller') {
                         history.push('/book-list');
-                    }else if(docSnap.data().userType === 'admin'){
+                    } else if (docSnap.data().userType === 'admin') {
                         history.push('/users');
-                    }else{
+                    } else {
                         //redirect to user not found or 404 error page
+                        history.push('/not-fount')
                     }
-                    
-                    
                 } else {
                     // doc.data() will be undefined in this case
                     console.log("No such document!");
@@ -51,7 +47,6 @@ export const registration = (credentials) => {
         createUserWithEmailAndPassword(auth, credentials.email, credentials.password)
             .then((userCredential) => {
                 const user = userCredential.user;
-                //console.log("Successfully create user through email and password user ---->", user);
                 let data = {
                     first_name: credentials.first_name,
                     last_name: credentials.last_name,
@@ -59,31 +54,24 @@ export const registration = (credentials) => {
                     userType: credentials.userType
                 }
                 return setDoc(doc(db, 'users', user.uid), data).then((res) => {
-                    // console.log("Successfully create user in collection ---->", res)
                     secureStorage.setItem("userData", data);
                     dispatch({ type: "REGISTRATION_SUCCESS", res });
-                    // history.push('/dashboard');
-                    if(data.userType === 'customer'){
+                    if (data.userType === 'customer') {
                         history.push('/dashboard');
-                    }else if(data.userType === 'seller'){
+                    } else if (data.userType === 'seller') {
                         history.push('/book-list');
-                    }else if(data.userType === 'admin'){
+                    } else if (data.userType === 'admin') {
                         history.push('/users');
-                    }else{
+                    } else {
                         //redirect to user not found or 404 error page
+                        history.push('/not-fount')
                     }
                 })
             }).catch((error) => {
-                //console.log("fail to create user ---->", error)
                 dispatch({ type: "REGISTRATION_FAIL", error });
             });
     }
 }
 
-export const logout = () =>{
-
-}
-
-// When logout then clear securestorage
-//secureStorage.clear();
-// clears all data in the underlining sessionStorage/localStorage.
+// export const logout = () =>{
+// }

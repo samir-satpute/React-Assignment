@@ -1,12 +1,11 @@
 
 const initialState = {
     orderList: null,
-    isOrderPlace:false,
-    isOrderConfirm:false
+    isOrderPlace: false,
+    isOrderConfirm: false
 }
 
 const orderReducer = (state = initialState, action) => {
-    // console.log("-------->reducer", action)
     switch (action.type) {
         case 'GET_ORDER_LIST':
             return {

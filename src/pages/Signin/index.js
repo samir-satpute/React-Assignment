@@ -1,56 +1,35 @@
-import React, { Fragment, useState } from "react";
-import { Button, Form, Grid, Header, Image, Message, Segment, Label } from 'semantic-ui-react';
+import React, { Fragment, useState, useRef, useEffect } from "react";
+import { Button, Form, Grid, Header, Image, Message, Segment } from 'semantic-ui-react';
 import { connect } from 'react-redux';
 import { authLogin } from "../../store/action/authAction";
-import FormElement from "../../hoc/FormElement";
+import FormElements from "../../hoc/FormElements";
 import { history } from "../../util/history";
+import checkFormError from "../../helperFunctions/checkFormError";
 
+const initialFormData = {
+    email: "",
+    password: "",
+}
 
+const initialFormError = {
+
+}
 const Signin = (props) => {
 
-    const [signInData, setSigninData] = useState({
-        email: "",
-        password: "",
-    });
-    const [errorList, setErrorList] = useState({});
+
     const toggleTab = () => {
         history.push('/signup')
     }
-    const handleChange = (e) => {
-        setSigninData({
-            ...signInData,
-            [e.target.name]: e.target.value,
-        });
-    }
-
-    const validateForm = async () => {
-        const errors = {};
-        if (signInData.email.trim() === "") {
-            errors.email = "Email required";
-        } else if (!new RegExp(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/).test(signInData.email) // email validation regex
-        ) {
-            errors.email = "Enter valid email id"
-        }
-        if (signInData.password.trim() === "") {
-            errors.password = "Password required"
-        } else if (!new RegExp(/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/).test(signInData.password)) { //Minimum eight characters, at least one letter and one number:
-            errors.password = "Password should min 8 length"
-        }
-
-        return Object.keys(errors).length === 0 ? null : errors;
-    };
 
     const handleSign = async (e) => {
-        let err = await validateForm();
-        setErrorList({ ...errorList, ...err });
-        if (err) {
-            //show error messsage through tost message or any other better UI
-            console.log("Error in sign up form----->", err)
-        } else {
-            // API call for registration page
-            e.preventDefault();
-            props.authLogin(signInData)
-            //console.log("sign in details form 2222222----->", props.auth)
+
+        if (checkFormError(props.formErrors, 'email') == null && checkFormError(props.formErrors, 'password') == null) {
+            try {
+                e.preventDefault();
+                props.authLogin(props.data)
+            } catch (error) {
+                console.log("Error in sign in form----->", error)
+            }
         }
     }
     return (
@@ -62,38 +41,20 @@ const Signin = (props) => {
                     </Header>
                     <Form size='large'>
                         <Segment stacked>
-                            {/* <Form.Input
-                                fluid 
-                                icon='user'
-                                type='email'
-                                name="email"
-                                onChange={handleChange}
-                                iconPosition='left'
-                                placeholder='E-mail address'
-                            /> */}
 
-                            {props.fromElement({
-                                icon: 'user', type: 'email', name: 'email',
-                                iconPosition: 'left', placeholder: 'Email address',
-                                onChange: handleChange
+                            {props.smartElement.formInput({
+                                type: 'email', name: 'email',
+                                placeholder: 'Email address',
+                                rules: ['required', 'email'],
+                                error: checkFormError(props.formErrors, 'email'),
                             })}
-                            {errorList.email && (<p style={{ color: "red", float: 'right' }}>Invalid email</p>)}
-                            {/* <Form.Input
-                                fluid
-                                icon='lock'
-                                iconPosition='left'
-                                placeholder='Password'
-                                type='password'
-                                name="password"
-                                onChange={handleChange}
-                            /> */}
-                            {props.fromElement({
-                                icon: 'lock', type: 'password', name: 'password',
-                                iconPosition: 'left', placeholder: 'Password',
-                                onChange: handleChange
+                            {props.smartElement.formInput({
+                                type: 'password', name: 'password',
+                                placeholder: 'Password',
+                                rules: ['required', 'password'],
+                                error: checkFormError(props.formErrors, 'password')
                             })}
 
-                            {errorList.password && (<p style={{ color: "red", float: 'right' }}>Minimum 8 char, at least 1 letter and 1 number</p>)}
                             <Button color='teal' fluid size='large' onClick={
                                 handleSign
                             }>
@@ -112,7 +73,6 @@ const Signin = (props) => {
     )
 }
 
-
 const mapDispatchToProps = dispatch => {
     return {
         authLogin: (credentials) => dispatch(authLogin(credentials))
@@ -124,6 +84,6 @@ const mapStateToProps = state => {
         auth: state.auth
     }
 }
-export default FormElement(connect(mapStateToProps, mapDispatchToProps)(Signin))
-// export default connect(mapStateToProps, mapDispatchToProps)(Signin);
-//export default Signin;
+
+
+export default FormElements(connect(mapStateToProps, mapDispatchToProps)(Signin, initialFormData, initialFormError))

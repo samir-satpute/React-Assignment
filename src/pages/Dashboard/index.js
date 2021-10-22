@@ -1,9 +1,6 @@
-import React, { Fragment, useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import Book from "../Book";
-
 import { connect } from 'react-redux';
-
-
 import { getBookList } from "../../store/action/bookAction";
 import { Button, Grid, Image } from 'semantic-ui-react';
 import secureStorage from '../../util/secureStorage';
@@ -24,6 +21,8 @@ const Dashboard = (props) => {
     const getBookList = async () => {
 
         props.getBookList().then(res => {
+
+            // console.log("list ----------->", res)
             setbookList(res.filter(item => item.status == 'PUBLISHED'));
         }).catch(err => {
             //error to fetch data
@@ -32,7 +31,7 @@ const Dashboard = (props) => {
 
 
     return (
-        <Fragment>
+        <>
             <Grid columns={3} divided>
                 <Grid.Row>
 
@@ -44,7 +43,7 @@ const Dashboard = (props) => {
                     }
                 </Grid.Row>
             </Grid>
-        </Fragment>
+        </>
     )
 }
 
@@ -62,4 +61,3 @@ const mapStateToProps = state => {
 }
 export default connect(mapStateToProps, mapDispatchToProps)(Dashboard);
 
-//export default Dashboard;

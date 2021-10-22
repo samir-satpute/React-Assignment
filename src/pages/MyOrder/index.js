@@ -1,6 +1,6 @@
-import React, { Fragment, useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import secureStorage from "../../util/secureStorage";
-import { Icon, Label, Menu, Table, Button, Form, Dropdown, Modal, Radio } from 'semantic-ui-react';
+import { Table, Button, Modal } from 'semantic-ui-react';
 import { connect } from 'react-redux';
 import { getOrderList, confirmOrder } from "../../store/action/orderAction";
 
@@ -19,7 +19,7 @@ const MyOrder = (props) => {
     const getOrderList = () => {
         const userData = secureStorage.getItem("userData");
         props.getOrderList().then(res => {
-            console.log("list -------------->", res)
+            // console.log("list -------------->", res)
             if (userData.userType == 'customer') {
                 setOrderList(res.filter(item => item.userName == userData.first_name))
             } else if (userData.userType == 'seller') {
@@ -43,7 +43,7 @@ const MyOrder = (props) => {
     }
     const userData = secureStorage.getItem("userData");
     return (
-        <Fragment>
+        <>
             <h1> In MyOrder component</h1>
             <Table celled>
                 <Table.Header>
@@ -90,10 +90,8 @@ const MyOrder = (props) => {
                                 {userData.userType == 'seller' && (
                                     <Table.Cell>
                                         {order.status == 'PENDING' && (
-                                            // <Button icon='edit' onClick={() => changeStatus(order)} />
                                             <Button icon='edit' onClick={() => { setOrderDetails(order); setOpen(true) }} />
                                         )}
-
                                     </Table.Cell>
                                 )}
                             </Table.Row>
@@ -102,7 +100,6 @@ const MyOrder = (props) => {
                 </Table.Body>
 
             </Table>
-
 
             <Modal
                 open={open}
@@ -122,12 +119,9 @@ const MyOrder = (props) => {
                     </Button>
                 </Modal.Actions>
             </Modal>
-
-        </Fragment>
-
+        </>
     )
 }
-
 
 const mapDispatchToProps = dispatch => {
     return {

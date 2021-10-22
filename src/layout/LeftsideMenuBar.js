@@ -1,20 +1,17 @@
 import { signOut } from "@firebase/auth";
 import React, { Fragment, useEffect, useState } from "react";
-
-import { Icon, Menu, Sidebar } from 'semantic-ui-react';
+import { Icon, Item, Menu, Sidebar } from 'semantic-ui-react';
 import secureStorage from "../util/secureStorage";
 import { history } from "../util/history";
+import { MenuBarItem } from "./MenuBarItem";
 
 const LeftsideMenuBar = (props) => {
 
     const [userType, setUserType] = useState("")
-
     useEffect(() => {
         const userData = secureStorage.getItem("userData");
         setUserType(userData.userType)
     }, [])
-
-
     const toggleRoute = path => {
         history.push(path)
     }
@@ -25,7 +22,7 @@ const LeftsideMenuBar = (props) => {
     }
 
     return (
-        <Fragment>
+        <>
             <Sidebar
                 as={Menu}
                 animation='overlay'
@@ -36,6 +33,16 @@ const LeftsideMenuBar = (props) => {
                 animation='push'
                 width='thin'
             >
+
+
+            {/* {MenuBarItem.map((item, index) =>{
+                 <Menu.Item as='a' onClick={() => toggleRoute(item.path)}>
+                 <Icon name={item.icon} />
+                {item.name}
+             </Menu.Item>
+            })} */}
+
+
                 {userType === 'customer' && (
                     <Menu.Item as='a' onClick={() => toggleRoute('/dashboard')}>
                     <Icon name='home' />
@@ -67,7 +74,7 @@ const LeftsideMenuBar = (props) => {
                     Logout
                 </Menu.Item>
             </Sidebar>
-        </Fragment>
+        </>
     )
 }
 

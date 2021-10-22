@@ -1,5 +1,5 @@
-import React, { Fragment, useState, useEffect } from 'react';
-import { Icon, Label, Menu, Table, Button, Form, Modal, Grid, Radio } from 'semantic-ui-react';
+import React, { useState, useEffect } from 'react';
+import { Table, Button, Form, Modal, Grid, Radio } from 'semantic-ui-react';
 import { collection, getFirestore, doc, addDoc, updateDoc, deleteDoc } from "firebase/firestore";
 import { connect } from 'react-redux';
 import { getBookList, getSellerList } from '../../store/action/bookAction';
@@ -55,14 +55,13 @@ const BookList = props => {
         if (bookDetailsForm.sellerName.trim() === "") {
             errors.sellerName = "required";
         }
-        
+
         return Object.keys(errors).length === 0 ? null : errors;
     };
 
     const getBookList = async () => {
         const userData = secureStorage.getItem("userData");
         props.getBookList().then(res => {
-            // console.log("list -------------->", res)
             if (userData.userType == 'seller') {
                 setbookList(res.filter(item => item.sellerName == userData.first_name))
             } else {
@@ -75,7 +74,6 @@ const BookList = props => {
     }
     const getSellerList = async () => {
         props.getSellerList().then(res => {
-            // console.log("list -------------->", res)
             setSellerList(res)
         }).catch(err => {
             //error to fetch data
@@ -124,13 +122,13 @@ const BookList = props => {
         setErrorList({ ...errorList, ...err });
         if (err) {
             console.log('error in form')// show toster message
-        }else{
+        } else {
             const userData = secureStorage.getItem("userData");
             const db = getFirestore();
             if (isEdit) {   //Edit existing book
-    
+
                 const bookRef = doc(db, "books", bookDetailsForm.bookId);
-    
+
                 await updateDoc(bookRef, {
                     title: bookDetailsForm.title,
                     author: bookDetailsForm.author,
@@ -141,17 +139,17 @@ const BookList = props => {
                     sellerName: userData.userType === 'seller' ? userData.first_name : bookDetailsForm.sellerName,
                 });
                 setOpen(false);
-    
+
                 setbookList(bookList.filter(item => item.bookId != bookDetailsForm.bookId));
-    
+
                 let id = { bookId: bookDetailsForm.bookId }
                 let bookWithId = { ...bookDetailsForm, id }
-    
+
                 // setbookList([...bookList, bookWithId])          // async operation
-    
+
                 setbookList(bookList => [...bookList, bookWithId]); //sync operation
                 console.log("update successfully----->");
-    
+
             } else {   //add new book
                 try {
                     //await setDoc(doc(db, "books"), bookDetailsForm);
@@ -161,13 +159,13 @@ const BookList = props => {
                     setOpen(false);
                     let id = { bookId: docRef.id }
                     let bookWithId = { ...bookDetailsForm, id }
-    
+
                     setbookList([...bookList, bookWithId])
-    
+
                 } catch (error) {
                     console.log("Error while data add------------------->", error)
                 }
-    
+
             }
 
         }
@@ -187,16 +185,16 @@ const BookList = props => {
     }
 
     return (
-        <Fragment>
+        <>
             <Grid>
                 <Grid.Column width={4}>
-                <h1 style={{ float: 'left' }}>List of books</h1>
+                    <h1 style={{ float: 'left' }}>List of books</h1>
                 </Grid.Column>
                 <Grid.Column width={4}>
                     <Button secondary onClick={openAddBookModal}>Add Book</Button>
                 </Grid.Column>
             </Grid>
-            <Fragment>
+            <>
                 <Table celled>
                     <Table.Header>
                         <Table.Row>
@@ -229,7 +227,6 @@ const BookList = props => {
                         })}
                     </Table.Body>
                 </Table>
-
 
                 <Modal open={open}>
                     <Modal.Header>{isEdit ? "Edit Book" : "Add Book"}</Modal.Header>
@@ -301,7 +298,6 @@ const BookList = props => {
                                         name="sellerName"
                                         onChange={handleSellerChange}
                                         placeholder='Seller'
-                                    // value={sellerList}
                                     />
                                     {errorList.sellerName && (<p style={{ color: "red", float: 'right' }}>required</p>)}
                                 </Form.Group>
@@ -357,8 +353,8 @@ const BookList = props => {
                         </Button>
                     </Modal.Actions>
                 </Modal>
-            </Fragment>
-        </Fragment>
+            </>
+        </>
     )
 }
 
@@ -376,5 +372,3 @@ const mapStateToProps = state => {
     }
 }
 export default connect(mapStateToProps, mapDispatchToProps)(BookList);
-
-//export default BookList;

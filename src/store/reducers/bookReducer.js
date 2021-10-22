@@ -7,7 +7,6 @@ const initialState = {
 }
 
 const bookReducer = (state = initialState, action) => {
-    // console.log("-------->reducer", action)
     switch (action.type) {
         case 'GET_BOOK_LIST':
             return {
