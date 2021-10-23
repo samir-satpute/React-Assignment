@@ -1,4 +1,4 @@
-import React, { Fragment, useState, useRef, useEffect } from "react";
+import React from "react";
 import { Button, Form, Grid, Header, Image, Message, Segment } from 'semantic-ui-react';
 import { connect } from 'react-redux';
 import { authLogin } from "../../store/action/authAction";
@@ -12,7 +12,8 @@ const initialFormData = {
 }
 
 const initialFormError = {
-
+    email: [{ required: false }, { email: false }],
+    password: [{ required: false }, { password: false }]
 }
 const Signin = (props) => {
 
@@ -22,8 +23,8 @@ const Signin = (props) => {
     }
 
     const handleSign = async (e) => {
-
-        if (checkFormError(props.formErrors, 'email') == null && checkFormError(props.formErrors, 'password') == null) {
+        // console.log("signin ---->", props.data, props.formErrors, props.isValidForm());
+        if (!props.isValidForm().includes(false)) {
             try {
                 e.preventDefault();
                 props.authLogin(props.data)
@@ -33,7 +34,7 @@ const Signin = (props) => {
         }
     }
     return (
-        <Fragment>
+        <>
             <Grid textAlign='center' style={{ height: '100vh' }} verticalAlign='middle'>
                 <Grid.Column style={{ maxWidth: 450 }}>
                     <Header as='h2' color='teal' textAlign='center'>
@@ -46,13 +47,13 @@ const Signin = (props) => {
                                 type: 'email', name: 'email',
                                 placeholder: 'Email address',
                                 rules: ['required', 'email'],
-                                error: checkFormError(props.formErrors, 'email'),
+                                error: props.isDirtyForm && checkFormError(props.formErrors, 'email'),
                             })}
                             {props.smartElement.formInput({
                                 type: 'password', name: 'password',
                                 placeholder: 'Password',
                                 rules: ['required', 'password'],
-                                error: checkFormError(props.formErrors, 'password')
+                                error: props.isDirtyForm && checkFormError(props.formErrors, 'password')
                             })}
 
                             <Button color='teal' fluid size='large' onClick={
@@ -69,7 +70,7 @@ const Signin = (props) => {
                     </Message>
                 </Grid.Column>
             </Grid>
-        </Fragment>
+        </>
     )
 }
 
@@ -86,4 +87,5 @@ const mapStateToProps = state => {
 }
 
 
-export default FormElements(connect(mapStateToProps, mapDispatchToProps)(Signin, initialFormData, initialFormError))
+// export default FormElements(connect(mapStateToProps, mapDispatchToProps)(Signin, initialFormData, initialFormError))
+export default FormElements((connect(mapStateToProps, mapDispatchToProps)(Signin)), initialFormData, initialFormError)

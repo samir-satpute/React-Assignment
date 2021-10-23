@@ -15,7 +15,10 @@ const initialFormData = {
 }
 
 const initialFormError = {
-
+    first_name: [{ required: false }],
+    last_name: [{ required: false }],
+    email: [{ required: false }, { email: false }],
+    password: [{ required: false }, { password: false }]
 }
 const Signup = (props) => {
 
@@ -24,10 +27,11 @@ const Signup = (props) => {
     }
 
     const signupHandler = async (e) => {
-        if (checkFormError(props.formErrors, 'first_name') == null &&
-            checkFormError(props.formErrors, 'first_name') == null &&
-            checkFormError(props.formErrors, 'email') == null &&
-            checkFormError(props.formErrors, 'password') == null) {
+        // if (checkFormError(props.formErrors, 'first_name') == null &&
+        //     checkFormError(props.formErrors, 'first_name') == null &&
+        //     checkFormError(props.formErrors, 'email') == null &&
+        //     checkFormError(props.formErrors, 'password') == null) {
+        if (!props.isValidForm().includes(false)) {
             try {
                 e.preventDefault();
                 props.registration(props.data);
@@ -52,14 +56,14 @@ const Signup = (props) => {
                                 name: 'first_name',
                                 placeholder: 'First Name',
                                 rules: ['required'],
-                                error: checkFormError(props.formErrors, 'first_name')
+                                error: props.isDirtyForm && checkFormError(props.formErrors, 'first_name')
                             })}
 
                             {props.smartElement.formInput({
                                 name: 'last_name',
                                 placeholder: 'Last Name',
                                 rules: ['required'],
-                                error: checkFormError(props.formErrors, 'last_name')
+                                error: props.isDirtyForm && checkFormError(props.formErrors, 'last_name')
                             })}
 
 
@@ -67,7 +71,7 @@ const Signup = (props) => {
                                 type: 'email', name: 'email',
                                 placeholder: 'Email address',
                                 rules: ['required', 'email'],
-                                error: checkFormError(props.formErrors, 'email')
+                                error: props.isDirtyForm && checkFormError(props.formErrors, 'email')
                             })}
 
 
@@ -75,7 +79,7 @@ const Signup = (props) => {
                                 type: 'password', name: 'password',
                                 placeholder: 'password',
                                 rules: ['required', 'password'],
-                                error: checkFormError(props.formErrors, 'password')
+                                error: props.isDirtyForm && checkFormError(props.formErrors, 'password')
                             })}
 
                             <Form.Field>

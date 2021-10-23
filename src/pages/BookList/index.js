@@ -4,8 +4,29 @@ import { collection, getFirestore, doc, addDoc, updateDoc, deleteDoc } from "fir
 import { connect } from 'react-redux';
 import { getBookList, getSellerList } from '../../store/action/bookAction';
 import secureStorage from '../../util/secureStorage';
+import FormElements from '../../hoc/FormElements';
+import checkFormError from '../../helperFunctions/checkFormError';
+import TableElement from '../../layout/TableElement';
+import { bookMetaData } from '../../constant/bookMetaData';
 
+const initialFormData = {
+    title: "",
+    author: "",
+    description: "",
+    price: 0,
+    discount: 0,
+    status: "PENDING",
+    sellerName: '',
+}
 
+const initialFormError = {
+    title: [{ required: false }],
+    author: [{ required: false }],
+    description: [{ required: false }],
+    price: [{ required: false }],
+    discount: [{ required: false }],
+    // sellerName: [{required: false}],
+}
 
 const BookList = props => {
 
@@ -16,16 +37,7 @@ const BookList = props => {
     const [isDeleteModal, setIsDeleteModal] = useState(false);
     const [bookId, setBookId] = useState("");
     const [isEdit, setIsEdit] = useState(false);
-    const [errorList, setErrorList] = useState({});
-    const [bookDetailsForm, setBookDetailsFrom] = useState({
-        title: "",
-        author: "",
-        description: "",
-        price: 0,
-        discount: 0,
-        status: "PENDING",
-        sellerName: '',
-    })
+
     useEffect(() => {
         const userData = secureStorage.getItem("userData");
         setUserType(userData.userType)
@@ -33,31 +45,8 @@ const BookList = props => {
         if (userData.userType == 'admin') {
             getSellerList();
         }
+        console.log("props in book list ------>", props)
     }, [])
-
-    const validateForm = async () => {
-        const errors = {};
-        if (bookDetailsForm.title.trim() === "") {
-            errors.title = "required";
-        }
-        if (bookDetailsForm.author.trim() === "") {
-            errors.author = "required";
-        }
-        if (bookDetailsForm.description.trim() === "") {
-            errors.description = "required";
-        }
-        if (bookDetailsForm.price < 0) {
-            errors.price = "required";
-        }
-        if (bookDetailsForm.discount < 0) {
-            errors.discount = "required";
-        }
-        if (bookDetailsForm.sellerName.trim() === "") {
-            errors.sellerName = "required";
-        }
-
-        return Object.keys(errors).length === 0 ? null : errors;
-    };
 
     const getBookList = async () => {
         const userData = secureStorage.getItem("userData");
@@ -80,108 +69,77 @@ const BookList = props => {
         })
     }
 
-    const handleChange = (e) => {
-        setBookDetailsFrom({
-            ...bookDetailsForm,
-            [e.target.name]: e.target.value,
-        });
-    }
-    const handleSellerChange = (e) => {
-        // console.log("handlesellerChange", e)
-        setBookDetailsFrom({
-            ...bookDetailsForm,
-            sellerName: e.target.outerText
-        })
-    }
-    const handleBookStatus = (value) => {
-        setBookDetailsFrom({
-            ...bookDetailsForm,
-            status: value
-        })
-    }
     const openAddBookModal = () => {
-        // setShowBookForm(true);
-        const userData = secureStorage.getItem("userData");
-        setBookDetailsFrom({
-            title: "",
-            author: "",
-            description: "",
-            price: 0,
-            discount: 0,
-            status: "PENDING",
-            sellerName: userData.userType === 'seller' ? userData.first_name : "",
-        })
         setOpen(true)
         setIsEdit(false)
 
     }
     const addBook = async () => {
 
+        // console.log("add book ---->", props.data, props.formErrors, props.isValidForm());
 
-        let err = await validateForm();
-        setErrorList({ ...errorList, ...err });
-        if (err) {
-            console.log('error in form')// show toster message
-        } else {
+        if (!props.isValidForm().includes(false)) {
             const userData = secureStorage.getItem("userData");
             const db = getFirestore();
-            if (isEdit) {   //Edit existing book
-
-                const bookRef = doc(db, "books", bookDetailsForm.bookId);
-
+            if (isEdit) {                                       //edit book
+                const bookRef = doc(db, "books", props.data.bookId);
                 await updateDoc(bookRef, {
-                    title: bookDetailsForm.title,
-                    author: bookDetailsForm.author,
-                    description: bookDetailsForm.description,
-                    price: bookDetailsForm.price,
-                    discount: bookDetailsForm.discount,
-                    status: bookDetailsForm.status,
-                    sellerName: userData.userType === 'seller' ? userData.first_name : bookDetailsForm.sellerName,
+                    title: props.data.title,
+                    author: props.data.author,
+                    description: props.data.description,
+                    price: props.data.price,
+                    discount: props.data.discount,
+                    status: props.data.status,
+                    sellerName: userData.userType === 'seller' ? userData.first_name : props.data.sellerName,
                 });
                 setOpen(false);
-
-                setbookList(bookList.filter(item => item.bookId != bookDetailsForm.bookId));
-
-                let id = { bookId: bookDetailsForm.bookId }
-                let bookWithId = { ...bookDetailsForm, id }
-
-                // setbookList([...bookList, bookWithId])          // async operation
-
+                setbookList(bookList.filter(item => item.bookId != props.data.bookId));
+                let id = { bookId: props.data.bookId }
+                let bookWithId = { ...props.data, id }
                 setbookList(bookList => [...bookList, bookWithId]); //sync operation
                 console.log("update successfully----->");
 
-            } else {   //add new book
+            } else {
                 try {
                     //await setDoc(doc(db, "books"), bookDetailsForm);
-                    const docRef = await addDoc(collection(db, "books"), bookDetailsForm);
-                    // console.log("Document written with ID: ", docRef.id);
-                    // console.log("Data added successfully------------------->")
-                    setOpen(false);
+                    const docRef = await addDoc(collection(db, "books"), {
+                        title: props.data.title,
+                        author: props.data.author,
+                        description: props.data.description,
+                        price: props.data.price,
+                        discount: props.data.discount,
+                        status: props.data.status,
+                        sellerName: userData.userType === 'seller' ? userData.first_name : props.data.sellerName,
+                    });
                     let id = { bookId: docRef.id }
-                    let bookWithId = { ...bookDetailsForm, id }
-
-                    setbookList([...bookList, bookWithId])
-
+                    let bookWithId = { ...props.data, id }
+                    setbookList([...bookList, bookWithId]);
+                    setOpen(false);
                 } catch (error) {
                     console.log("Error while data add------------------->", error)
                 }
-
             }
-
         }
-
     }
-
     const editBook = bookDetails => {
+        props.getFromValue(bookDetails);
         setIsEdit(true)
-        setBookDetailsFrom(bookDetails)
         setOpen(true);
     }
     const deleteBook = async () => {
         const db = getFirestore();
         await deleteDoc(doc(db, "books", bookId));
         setbookList(bookList.filter(item => item.bookId != bookId));
-        console.log("Delete book successfully")
+        setIsDeleteModal(false);
+    }
+
+    const actionButtons = (book) => {
+        return (
+            <>
+                <Button icon='edit' onClick={() => editBook(book)} />
+                <Button icon='delete' onClick={() => { setIsDeleteModal(true); setBookId(book.bookId) }} />
+            </>
+        )
     }
 
     return (
@@ -195,132 +153,93 @@ const BookList = props => {
                 </Grid.Column>
             </Grid>
             <>
-                <Table celled>
-                    <Table.Header>
-                        <Table.Row>
-                            <Table.HeaderCell>Tile</Table.HeaderCell>
-                            <Table.HeaderCell>Author</Table.HeaderCell>
-                            <Table.HeaderCell>Price</Table.HeaderCell>
-                            <Table.HeaderCell>Discount</Table.HeaderCell>
-                            <Table.HeaderCell>Seller Name</Table.HeaderCell>
-                            <Table.HeaderCell>Status</Table.HeaderCell>
-                            <Table.HeaderCell>Action</Table.HeaderCell>
-                        </Table.Row>
-                    </Table.Header>
-
-                    <Table.Body>
-                        {bookList.map((book, index) => {
-                            return (
-                                <Table.Row key={index}>
-                                    <Table.Cell>{book.title}</Table.Cell>
-                                    <Table.Cell>{book.author}</Table.Cell>
-                                    <Table.Cell>{book.price}</Table.Cell>
-                                    <Table.Cell>{book.discount}%</Table.Cell>
-                                    <Table.Cell>{book.sellerName}</Table.Cell>
-                                    <Table.Cell>{book.status}</Table.Cell>
-                                    <Table.Cell>
-                                        <Button icon='edit' onClick={() => editBook(book)} />
-                                        <Button icon='delete' onClick={() => { setIsDeleteModal(true); setBookId(book.bookId) }} />
-                                    </Table.Cell>
-                                </Table.Row>
-                            )
-                        })}
-                    </Table.Body>
-                </Table>
+                <TableElement
+                    title="List of Books"
+                    headerList={bookMetaData}
+                    metaData={bookList}
+                    actionType={true}
+                    actionComponent={actionButtons}
+                />
 
                 <Modal open={open}>
                     <Modal.Header>{isEdit ? "Edit Book" : "Add Book"}</Modal.Header>
                     <Modal.Content>
                         <Form>
                             <Form.Group widths='equal'>
-                                <Form.Input
-                                    fluid
-                                    label='Title'
-                                    placeholder='Book title'
-                                    type='text'
-                                    name="title"
-                                    onChange={handleChange}
-                                    value={bookDetailsForm.title}
-                                />
-                                {errorList.title && (<p style={{ color: "red", float: 'right' }}>required</p>)}
-                                <Form.Input
-                                    fluid
-                                    label='Author'
-                                    placeholder='Author name'
-                                    type='text'
-                                    name="author"
-                                    onChange={handleChange}
-                                    value={bookDetailsForm.author}
-                                />
-                                {errorList.author && (<p style={{ color: "red", float: 'right' }}>required</p>)}
+                                {props.smartElement.formInput({
+                                    label: 'Title',
+                                    name: 'title',
+                                    placeholder: 'Book title',
+                                    rules: ['required'],
+                                    value: props.data?.title,
+                                    error: props.isDirtyForm && checkFormError(props.formErrors, 'title')
+                                })}
+                                {props.smartElement.formInput({
+                                    label: 'Author',
+                                    name: 'author',
+                                    placeholder: 'Author name',
+                                    rules: ['required'],
+                                    value: props.data?.author,
+                                    error: props.isDirtyForm && checkFormError(props.formErrors, 'author')
+                                })}
                             </Form.Group>
                             <Form.Group widths='equal'>
-                                <Form.TextArea
-                                    fluid
-                                    label='Description'
-                                    placeholder='description'
-                                    type='text'
-                                    name="description"
-                                    onChange={handleChange}
-                                    value={bookDetailsForm.description}
-                                />
-                                {errorList.description && (<p style={{ color: "red", float: 'right' }}>required</p>)}
+                                {props.smartElement.formTextArea({
+                                    label: 'Description',
+                                    name: 'description',
+                                    placeholder: 'Description',
+                                    rules: ['required'],
+                                    value: props.data?.description,
+                                    error: props.isDirtyForm && checkFormError(props.formErrors, 'description')
+                                })}
                             </Form.Group>
                             <Form.Group widths='equal'>
-                                <Form.Input
-                                    fluid
-                                    label='Price'
-                                    placeholder='Price'
-                                    type='number'
-                                    name="price"
-                                    onChange={handleChange}
-                                    value={bookDetailsForm.price}
-                                />
-                                {errorList.price && (<p style={{ color: "red", float: 'right' }}>required</p>)}
-                                <Form.Input
-                                    fluid
-                                    label='Discount'
-                                    placeholder='Discount'
-                                    type='number'
-                                    name="discount"
-                                    onChange={handleChange}
-                                    value={bookDetailsForm.discount}
-                                />
-                                {errorList.discount && (<p style={{ color: "red", float: 'right' }}>required</p>)}
+                                {props.smartElement.formInput({
+                                    label: 'Price',
+                                    name: 'price',
+                                    placeholder: 'Price',
+                                    type: 'number',
+                                    rules: ['required'],
+                                    value: props.data?.price,
+                                    error: props.isDirtyForm && checkFormError(props.formErrors, 'price')
+                                })}
+                                {props.smartElement.formInput({
+                                    label: 'Discount',
+                                    name: 'discount',
+                                    placeholder: 'Discount',
+                                    type: 'number',
+                                    value: props.data?.discount,
+                                    rules: ['required'],
+                                    error: props.isDirtyForm && checkFormError(props.formErrors, 'discount')
+                                })}
                             </Form.Group>
                             {userType === 'admin' && !isEdit && (
-
                                 <Form.Group widths='equal'>
-                                    <Form.Select
-                                        fluid
-                                        label='Select Seller'
-                                        options={sellerList}
-                                        name="sellerName"
-                                        onChange={handleSellerChange}
-                                        placeholder='Seller'
-                                    />
-                                    {errorList.sellerName && (<p style={{ color: "red", float: 'right' }}>required</p>)}
+                                    {props.smartElement.formSelect({
+                                        label: 'Select',
+                                        name: 'sellerName',
+                                        placeholder: 'Seller',
+                                        options: sellerList,
+                                        rules: ['required'],
+                                        // error: props.isDirtyForm && checkFormError(props.formErrors, 'sellerName')
+                                    })}
                                 </Form.Group>
                             )}
-
                             {userType === 'admin' && (
-
                                 <Form.Group>
                                     <label><b>Status</b></label>
-                                    <Radio
-                                        label='PENDING'
-                                        name='statusRadio'
-                                        value='PENDING'
-                                        checked={bookDetailsForm.status === 'PENDING'}
-                                        onChange={() => { handleBookStatus('PENDING') }}
-                                    />
-                                    <Radio
-                                        label='PUBLISHED'
-                                        name='statusRadio'
-                                        value='PUBLISHED'
-                                        checked={bookDetailsForm.status === 'PUBLISHED'}
-                                        onChange={() => { handleBookStatus('PUBLISHED') }}
-                                    />
+                                    {props.smartElement.fromRadio({
+                                        label: 'PENDING',
+                                        name: 'status',
+                                        value: 'PENDING',
+                                        checked: props.data?.status === 'PENDING',
+                                    })}
+                                    {props.smartElement.fromRadio({
+                                        label: 'PUBLISHED',
+                                        name: 'status',
+                                        value: 'PUBLISHED',
+                                        checked: props.data?.status === 'PUBLISHED',
+                                    })}
                                 </Form.Group>
                             )}
                         </Form>
@@ -371,4 +290,5 @@ const mapStateToProps = state => {
         sellers: state.book.sellerList,
     }
 }
-export default connect(mapStateToProps, mapDispatchToProps)(BookList);
+// export default connect(mapStateToProps, mapDispatchToProps)(BookList);
+export default (FormElements((connect(mapStateToProps, mapDispatchToProps)(BookList)), initialFormData, initialFormError))

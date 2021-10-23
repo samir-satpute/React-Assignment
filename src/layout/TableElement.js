@@ -6,6 +6,8 @@ const TableElement = (props) => {
     // 1- Title "" -->   title
     // 2 - HeaderList [] --> headerList 
     // 3- table list data []  --> metaData
+    // 4 - actionType --> if present(true) add action component
+    // 5 - actionComponent --> action component
     return (
 
         <>
@@ -25,7 +27,12 @@ const TableElement = (props) => {
                             return (
                                 <Table.Row key={index}>
                                     {props.headerList.map(header => (
-                                        <Table.Cell>{data[header.key]}</Table.Cell>
+                                        // {data[header.key] && }
+                                        <Table.Cell>
+                                            {data[header.key] || props.actionType && props.actionComponent(data)}
+                                            {/* {props.actionType && header.key && props.actionComponent(data)} */}
+                                        </Table.Cell>
+                                        
                                     ))}
                                 </Table.Row>
                             )
