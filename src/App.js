@@ -1,53 +1,87 @@
-import logo from './logo.svg';
+import React, { Suspense } from 'react';
 import './App.css';
 import './assets/semantic/semantic.min.css'
-import { Header, Button, Divider } from 'semantic-ui-react'
-// import { Container, Header } from 'semantic-ui-react'
+import { BrowserRouter, Router, Switch } from 'react-router-dom';
+import { history } from './util/history';
+import { GuardProvider, GuardedRoute } from 'react-router-guards';
+import { authProtectedRoutes, publicRoutes } from './routes';
+import NonAuthLayout from './layout/NonAuthLayout';
+import AuthLayout from './layout/AuthLayout';
+import routeGuard from './routes/route-guard';
+import AppLoader from './layout/AppLoader';
+import ErrorBoundary from './layout/ErrorBoundry';
 
-function App() {
+
+// handle auth and authorization layout 
+const AppRoute = ({
+  component: Component,
+  layout: Layout,
+  isAuthProtected,
+  ...rest
+}) => {
+  return (
+    <GuardedRoute
+      {...rest}
+      render={(props) => {
+        if (isAuthProtected) {   //define layout with sidebar and other side layout or anything new layour which final by designer
+          return (
+            <Layout>
+              <Component {...props} />
+            </Layout>
+          );
+        }
+        // authorised so return component
+        return (
+          <Layout>
+            <Component {...props} />
+          </Layout>
+        );
+      }}
+    />
+  );
+};
+
+
+const App = () => {
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <Header as='h1'>Welcome To React App With Semtic UI</Header>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-        <Divider hidden />
-        <div>
-          <Button content='Primary' primary />
-          <Button content='Secondary' secondary />
-        </div>
-      </header>
+      <BrowserRouter>
+        <ErrorBoundary>
+          <Suspense fallback={<AppLoader />}>
+            <GuardProvider guards={[routeGuard]} >
+              <Router history={history}>
+                <Switch>
+                  {/* public route render */}
+                  {publicRoutes.map((route, idx) => (
+                    <AppRoute
+                      path={route.path}
+                      layout={NonAuthLayout}
+                      component={route.component}
+                      key={idx}
+                      isAuthProtected={false}
+                      {...route}
+                    />
+                  ))}
+                  {/* authorised route render */}
+                  {authProtectedRoutes.map((route, idx) => (
+                    <AppRoute
+                      path={route.path}
+                      layout={AuthLayout}
+                      component={route.component}
+                      key={idx}
+                      isAuthProtected={true}
+                      {...route}
+                    />
+                  ))}
+                </Switch>
+              </Router>
+            </GuardProvider>
+          </Suspense>
+        </ErrorBoundary>
+      </BrowserRouter>
+
     </div>
-  //   <div>
-  //   <Container fluid>
-  //     <Header as='h2'>Dogs Roles with Humans</Header>
-  //     <p>
-  //       Domestic dogs inherited complex behaviors, such as bite inhibition, from
-  //       their wolf ancestors, which would have been pack hunters with complex
-  //       body language. These sophisticated forms of social cognition and
-  //       communication may account for their trainability, playfulness, and
-  //       ability to fit into human households and social situations, and these
-  //       attributes have given dogs a relationship with humans that has enabled
-  //       them to become one of the most successful species on the planet today.
-  //     </p>
-  //     <p>
-  //       The dogs' value to early human hunter-gatherers led to them quickly
-  //       becoming ubiquitous across world cultures. Dogs perform many roles for
-  //       people, such as hunting, herding, pulling loads, protection, assisting
-  //       police and military, companionship, and, more recently, aiding
-  //       handicapped individuals. This impact on human society has given them the
-  //       nickname "man's best friend" in the Western world. In some cultures,
-  //       however, dogs are also a source of meat.
-  //     </p>
-  //   </Container>
-  // </div>
   );
 }
 

@@ -16,3 +16,5 @@ package-lock.json
 *.js.map
 .vscode
 .eslintcache
+.env.development
+.env.production
