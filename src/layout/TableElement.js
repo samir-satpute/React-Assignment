@@ -29,8 +29,7 @@ const TableElement = (props) => {
                                     {props.headerList.map(header => (
                                         // {data[header.key] && }
                                         <Table.Cell>
-                                            {data[header.key] || props.actionType && props.actionComponent(data)}
-                                            {/* {props.actionType && header.key && props.actionComponent(data)} */}
+                                            {header.key ? data[header.key] : props.actionComponent(data)}
                                         </Table.Cell>
                                         
                                     ))}

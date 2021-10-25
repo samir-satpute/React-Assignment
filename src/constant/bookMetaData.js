@@ -5,5 +5,5 @@ export const bookMetaData = [
     { title: "Discount", key: "discount" },
     { title: "Seller name", key: 'sellerName' },
     { title: "Status", key: 'status' },
-    { title: "Action",  }
+    { title: "Action", action:true }
 ];
