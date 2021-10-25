@@ -127,10 +127,15 @@ const BookList = props => {
         setOpen(true);
     }
     const deleteBook = async () => {
-        const db = getFirestore();
-        await deleteDoc(doc(db, "books", bookId));
-        setbookList(bookList.filter(item => item.bookId != bookId));
-        setIsDeleteModal(false);
+        try {
+            const db = getFirestore();
+            await deleteDoc(doc(db, "books", bookId));
+            setbookList(bookList.filter(item => item.bookId != bookId));
+            setIsDeleteModal(false);
+        } catch (error) {
+            console.log("error in delete book")
+        }
+       
     }
 
     const actionButtons = (book) => {
@@ -157,7 +162,7 @@ const BookList = props => {
                     title="List of Books"
                     headerList={bookMetaData}
                     metaData={bookList}
-                    actionType={true}
+                    // actionType={true}
                     actionComponent={actionButtons}
                 />
 
